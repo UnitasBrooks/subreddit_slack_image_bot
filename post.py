@@ -32,31 +32,39 @@ slack = Slacker(slack_api_key)
 #pp.pprint(channels.body)
 
 def main():
+    
     last_message = {'ts' : ''}
+    
     while 1:
+        
         try:
             messages = slack.channels.history('C0PE2U1R6')
         except Exception, e:
             print e
             slack.chat.post_message('#robot','Error found retrieving history: ' +  e)
             time.sleep(10)
+
         cur_message = messages.body['messages'][0]
         #pp.pprint(cur_message)
         if last_message['ts'] != cur_message['ts']:
             
             words = cur_message['text'].split(' ')
             pp.pprint(words)
+
             if len(words) >= 3 and words[0] == 'bot' and words[2] == "me":
                 print 'Getting image from subreddit: ' +  words[1]
                 url = get_image(imgur,words[1])
                 slack.chat.post_message('#robots', url)
+
         last_message = cur_message
         time.sleep(1)
 
 def get_image(imgur,sub_name):
+    
     subreddit = imgur.subreddit_gallery(sub_name)
     image_id = ""
     url = ""
+    
     try:
         random_image = subreddit[randint(0,len(subreddit)-1)]
         image_id = random_image.id
