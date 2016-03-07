@@ -34,7 +34,12 @@ slack = Slacker(slack_api_key)
 def main():
     last_message = {'ts' : ''}
     while 1:
-        messages = slack.channels.history('C0PE2U1R6')
+        try:
+            messages = slack.channels.history('C0PE2U1R6')
+        except Exception, e:
+            print e
+            slack.chat.post_message('#robot','Error found retrieving history: ' +  e)
+            time.sleep(10)
         cur_message = messages.body['messages'][0]
         #pp.pprint(cur_message)
         if last_message['ts'] != cur_message['ts']:
